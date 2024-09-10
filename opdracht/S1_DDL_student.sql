@@ -35,6 +35,8 @@
 -- geaccepteerd. Test deze regel en neem de gegooide foutmelding op als
 -- commentaar in de uitwerking.
 
+ALTER TABLE medewerkers
+ADD COLUMN geslacht varchar, CONSTRAINT m_geslacht_chk CHECK(geslacht in ('M','V'))
 
 -- S1.2. Nieuwe afdeling
 --
@@ -43,6 +45,11 @@
 -- nieuwe medewerker A DONK aangenomen. Hij krijgt medewerkersnummer 8000
 -- en valt direct onder de directeur.
 -- Voeg de nieuwe afdeling en de nieuwe medewerker toe aan de database.
+
+--VALUES NOG TOEVOEGEN
+INSERT INTO afdelingen VALUES ()
+INSERT INTO mederwerkers VALUES()
+
 
 
 -- S1.3. Verbetering op afdelingentabel
@@ -55,6 +62,18 @@
 --   c) Op enig moment gaat het mis. De betreffende kolommen zijn te klein voor
 --      nummers van 3 cijfers. Los dit probleem op.
 
+CREATE SEQUENCE afdelingennr_seq
+    INCREMENT 10
+    START 50
+    MINVALUE 50
+    MAX VALUE 1000
+    CACHE 1;
+
+INSERT INTO afdelingen VALUES(afdelingennr_seq, 'KANTOOR', 'UTRECHT', 7982),
+                             (afdelingennr_seq, 'HR', 'UTRECHT', 7982),
+                             (afdelingennr_seq, 'INKOOP', 'UTRECHT', 7982);
+
+?
 
 -- S1.4. Adressen
 --
@@ -69,6 +88,16 @@
 --    telefoon      10 cijfers, uniek
 --    med_mnr       FK, verplicht
 
+CREATE TABLE adressen (
+    postcode VARCHAR(12) CONSTRAINT p_pk PRIMARY KEY, --4 cijfers 2 letters checken
+    huisnummer VARCHAR(12) CONSTRAINT h_pk PRIMARY KEY,
+    ingangsdatum DATE CONSTRAINT i_pk PRIMARY KEY,
+    einddatum DATE CONSTRAINT edatum_a_idatum Check(einddatum > adressen.ingangsdatum),
+    telefoon NUMERIC(10) UNIQUE,
+    med_mnr NUMERIC(4) CONSTRAINT mnr_fk FOREIGN KEY REFERENCES medewerkers(mnr)
+)
+
+INSERT INTO adressen ('2210AE', '13', 2020-03-12, 2020-09-12, 0612345678, --FK)
 
 -- S1.5. Commissie
 --
@@ -76,13 +105,16 @@
 -- 'VERKOPER' heeft, anders moet de commissie NULL zijn. Schrijf hiervoor een beperkingsregel. Gebruik onderstaande
 -- 'illegale' INSERTs om je beperkingsregel te controleren.
 
+-- MOET NULL WORDEN
 INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm)
 VALUES (8001, 'MULLER', 'TJ', 'TRAINER', 7566, '1982-08-18', 2000, 500);
 
+-- MOET GEEN NULL WORDEN
 INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm)
 VALUES (8002, 'JANSEN', 'M', 'VERKOPER', 7698, '1981-07-17', 1000, NULL);
 
-
+ALTER TABLE medewerkers
+    ADD CONSTRAINT verkoper_nn Check(functie='VERKOPER' AND comm IS NOT NULL OR functie<>'VERKOPER' AND comm IS NULL)
 
 -- -------------------------[ HU TESTRAAMWERK ]--------------------------------
 -- Met onderstaande query kun je je code testen. Zie bovenaan dit bestand

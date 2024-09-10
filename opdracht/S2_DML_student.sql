@@ -32,6 +32,7 @@
 -- Geef code en omschrijving van alle cursussen die precies vier dagen duren.
 -- DROP VIEW IF EXISTS s2_1; CREATE OR REPLACE VIEW s2_1 AS                                                     -- [TEST]
 
+SELECT code, omschrijving FROM cursussen where lengte = 4
 
 -- S2.2. Medewerkersoverzicht
 --
@@ -39,6 +40,8 @@
 -- en per functie op leeftijd (van jong naar oud).
 -- DROP VIEW IF EXISTS s2_2; CREATE OR REPLACE VIEW s2_2 AS                                                     -- [TEST]
 
+select * from medewerkers
+order by functie, gbdatum DESC
 
 -- S2.3. Door het land
 --
@@ -46,19 +49,25 @@
 -- code en begindatum.
 -- DROP VIEW IF EXISTS s2_3; CREATE OR REPLACE VIEW s2_3 AS                                                     -- [TEST]
 
+select cursus, begindatum from uitvoeringen
+where locatie = 'UTRECHT' or locatie = 'MAASTRICHT'
 
 -- S2.4. Namen
 --
 -- Geef de naam en voorletters van alle medewerkers, behalve van R. Jansen.
 -- DROP VIEW IF EXISTS s2_4; CREATE OR REPLACE VIEW s2_4 AS                                                     -- [TEST]
 
+select naam, voorl from medewerkers
+where naam <> 'JANSEN' or voorl <> 'R'
+
+-- HET WERKT MAAR IK DACHT DAT IK AND MOEST GEBRUIKER IPV OR. IK SNAP NIET WAAROM HET OR IS
 
 -- S2.5. Nieuwe SQL-cursus
 --
 -- Er wordt een nieuwe uitvoering gepland voor cursus S02, en wel op de
 -- komende 2 maart. De cursus wordt gegeven in Leerdam door Nick Smit.
 -- Voeg deze gegevens toe.
-INSERT
+INSERT INTO cursussen VALUES ('S02', 02-03-2024, 7369, 'Leerdam')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -66,7 +75,7 @@ ON CONFLICT DO NOTHING;                                                         
 --
 -- Neem één van je collega-studenten aan als stagiair ('STAGIAIR') en
 -- voer zijn of haar gegevens in. Kies een personeelnummer boven de 8000.
-INSERT
+INSERT INTO medewerkers VALUES (8002, 'Kasper', 'K', 'STAGIAIR', 7698, 03-01-2004, 2000, NULL, 20)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -74,7 +83,7 @@ ON CONFLICT DO NOTHING;                                                         
 --
 -- We breiden het salarissysteem uit naar zes schalen. Voer een extra schaal in voor mensen die
 -- tussen de 3001 en 4000 euro verdienen. Zij krijgen een toelage van 500 euro.
-INSERT
+INSERT INTO schalen VALUES (6, 3001.00, 4000.00, 500)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -83,17 +92,17 @@ ON CONFLICT DO NOTHING;                                                         
 -- Er wordt een nieuwe 6-daagse cursus 'Data & Persistency' in het programma opgenomen.
 -- Voeg deze cursus met code 'D&P' toe, maak twee uitvoeringen in Leerdam en schrijf drie
 -- mensen in.
-INSERT
+INSERT INTO cursussen VALUES ('D&P', 'Data & Persistency', 'BLD', 6)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO uitvoeringen VALUES ('D&P', 02-03-2024, 8002, 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO uitvoeringen VALUES ('D&P', 07-03-2024, 8002, 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO inschrijvingen VALUES (7499, 'D&P', 02-03-2024, NULL)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO inschrijvingen VALUES (7934, 'D&P', 02-03-2024, NULL)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT
+INSERT INTO inschrijvingen VALUES (7698, 'D&P', 02-03-2024, NULL)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -102,26 +111,34 @@ ON CONFLICT DO NOTHING;                                                         
 -- De medewerkers van de afdeling VERKOOP krijgen een salarisverhoging
 -- van 5.5%, behalve de manager van de afdeling, deze krijgt namelijk meer: 7%.
 -- Voer deze verhogingen door.
+UPDATE medewerkers
+SET maandsal = maandsal * 1.05
+WHERE functie <> 'MANAGER' AND afd = 30
 
+UPDATE medewerkers
+SET maandsal = maandsal * 1.07
+WHERE functie = 'MANAGER' AND afd = 30
 
 -- S2.10. Concurrent
 --
 -- Martens heeft als verkoper succes en wordt door de concurrent
 -- weggekocht. Verwijder zijn gegevens.
+DELETE FROM medewerkers
+WHERE naam = 'MARTENS'
 
 -- Zijn collega Alders heeft ook plannen om te vertrekken. Verwijder ook zijn gegevens.
 -- Waarom lukt dit (niet)?
-
+--GEEN IDEE
 
 -- S2.11. Nieuwe afdeling
 --
 -- Je wordt hoofd van de nieuwe afdeling 'FINANCIEN' te Leerdam,
 -- onder de hoede van De Koning. Kies een personeelnummer boven de 8000.
 -- Zorg voor de juiste invoer van deze gegevens.
-INSERT
+INSERT INTO afdelingen VALUES (60, 'FINANCIEN', 'LEERDAM', 8010)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
-INSERT
+INSERT INTO medewerkers VALUES (8010, 'Kasper', 'K', 'MANAGER', 7839, 03-01-2004, 4000, NULL, 60)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
