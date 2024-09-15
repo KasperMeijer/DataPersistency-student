@@ -36,7 +36,9 @@
 -- commentaar in de uitwerking.
 
 ALTER TABLE medewerkers
-ADD COLUMN geslacht varchar, CONSTRAINT m_geslacht_chk CHECK(geslacht in ('M','V'))
+ADD COLUMN geslacht varchar CONSTRAINT m_geslacht_chk CHECK(geslacht in ('M','V'))
+
+-- GEEN FOUTMELDING
 
 -- S1.2. Nieuwe afdeling
 --
@@ -47,9 +49,9 @@ ADD COLUMN geslacht varchar, CONSTRAINT m_geslacht_chk CHECK(geslacht in ('M','V
 -- Voeg de nieuwe afdeling en de nieuwe medewerker toe aan de database.
 
 --VALUES NOG TOEVOEGEN
-INSERT INTO afdelingen VALUES ()
-INSERT INTO mederwerkers VALUES()
-
+INSERT INTO afdelingen VALUES (50, 'ONDERZOEK', 'ZWOLLE');
+INSERT INTO medewerkers VALUES(8000, 'DONK', 'A', 'MANAGER', 7839, '12-7-1972', 5000, null, 50, 'M');
+UPDATE afdelingen SET hoofd = 8000 WHERE anr = 50;
 
 
 -- S1.3. Verbetering op afdelingentabel
@@ -64,16 +66,19 @@ INSERT INTO mederwerkers VALUES()
 
 CREATE SEQUENCE afdelingennr_seq
     INCREMENT 10
-    START 50
-    MINVALUE 50
-    MAX VALUE 1000
-    CACHE 1;
+    START 60
 
-INSERT INTO afdelingen VALUES(afdelingennr_seq, 'KANTOOR', 'UTRECHT', 7982),
-                             (afdelingennr_seq, 'HR', 'UTRECHT', 7982),
-                             (afdelingennr_seq, 'INKOOP', 'UTRECHT', 7982);
+ALTER TABLE afdelingen ALTER COLUMN anr SET DEFAULT nextval('afdelingennr_seq');
 
-?
+INSERT INTO afdelingen (naam, locatie, hoofd) VALUES('KANTOOR', 'UTRECHT', 7839),
+                                                    ('HR', 'UTRECHT', 7839),
+                                                    ('INKOOP', 'UTRECHT', 7839),
+                                                    ('TEST1', 'UTRECHT', 7839),
+                                                    ('TEST2', 'UTRECHT', 7839),
+                                                    ('TEST3', 'UTRECHT', 7839);
+
+-- C: ERROR:  A field with precision 2, scale 0 must round to an absolute value less than 10^2.numeric field overflow
+ALTER TABLE afdelingen ALTER COLUMN anr TYPE numeric(3);
 
 -- S1.4. Adressen
 --
@@ -89,15 +94,17 @@ INSERT INTO afdelingen VALUES(afdelingennr_seq, 'KANTOOR', 'UTRECHT', 7982),
 --    med_mnr       FK, verplicht
 
 CREATE TABLE adressen (
-    postcode VARCHAR(12) CONSTRAINT p_pk PRIMARY KEY, --4 cijfers 2 letters checken
-    huisnummer VARCHAR(12) CONSTRAINT h_pk PRIMARY KEY,
-    ingangsdatum DATE CONSTRAINT i_pk PRIMARY KEY,
+    postcode VARCHAR(12) CONSTRAINT postcode_format CHECK (postcode SIMILAR TO '[0-9]{4}[A-Z]{2}'), --4 cijfers 2 letters checken
+    huisnummer VARCHAR(12),
+    ingangsdatum DATE,
     einddatum DATE CONSTRAINT edatum_a_idatum Check(einddatum > adressen.ingangsdatum),
     telefoon NUMERIC(10) UNIQUE,
-    med_mnr NUMERIC(4) CONSTRAINT mnr_fk FOREIGN KEY REFERENCES medewerkers(mnr)
+    med_mnr NUMERIC(4),
+    CONSTRAINT adressen_pk PRIMARY KEY (postcode, huisnummer, ingangsdatum),
+    CONSTRAINT mnr_fk FOREIGN KEY (med_mnr) REFERENCES medewerkers(mnr)
 )
 
-INSERT INTO adressen ('2210AE', '13', 2020-03-12, 2020-09-12, 0612345678, --FK)
+INSERT INTO adressen VALUES ('2210AE', '13', '2020-03-12', '2020-09-12', 0612345678, 8000)
 
 -- S1.5. Commissie
 --
@@ -113,6 +120,7 @@ VALUES (8001, 'MULLER', 'TJ', 'TRAINER', 7566, '1982-08-18', 2000, 500);
 INSERT INTO medewerkers (mnr, naam, voorl, functie, chef, gbdatum, maandsal, comm)
 VALUES (8002, 'JANSEN', 'M', 'VERKOPER', 7698, '1981-07-17', 1000, NULL);
 
+-- De constraint
 ALTER TABLE medewerkers
     ADD CONSTRAINT verkoper_nn Check(functie='VERKOPER' AND comm IS NOT NULL OR functie<>'VERKOPER' AND comm IS NULL)
 
