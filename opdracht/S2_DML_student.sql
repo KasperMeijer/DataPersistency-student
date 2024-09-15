@@ -67,16 +67,16 @@ where naam <> 'JANSEN' or voorl <> 'R'
 -- Er wordt een nieuwe uitvoering gepland voor cursus S02, en wel op de
 -- komende 2 maart. De cursus wordt gegeven in Leerdam door Nick Smit.
 -- Voeg deze gegevens toe.
-INSERT INTO cursussen VALUES ('S02', 02-03-2024, 7369, 'Leerdam')
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+INSERT INTO uitvoeringen VALUES ('S02', '02-03-2024', 7369, 'Leerdam')
+ON CONFLICT DO NOTHING;                                                                                            -- [TEST]
 
 
 -- S2.6. Stagiairs
 --
 -- Neem één van je collega-studenten aan als stagiair ('STAGIAIR') en
 -- voer zijn of haar gegevens in. Kies een personeelnummer boven de 8000.
-INSERT INTO medewerkers VALUES (8002, 'Kasper', 'K', 'STAGIAIR', 7698, 03-01-2004, 2000, NULL, 20)
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+INSERT INTO medewerkers VALUES (8002, 'Kasper', 'K', 'STAGIAIR', 7698, '03-01-2004', 2000, NULL, 20)
+ON CONFLICT DO NOTHING;                                                                                           -- [TEST]
 
 
 -- S2.7. Nieuwe schaal
@@ -93,17 +93,17 @@ ON CONFLICT DO NOTHING;                                                         
 -- Voeg deze cursus met code 'D&P' toe, maak twee uitvoeringen in Leerdam en schrijf drie
 -- mensen in.
 INSERT INTO cursussen VALUES ('D&P', 'Data & Persistency', 'BLD', 6)
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT INTO uitvoeringen VALUES ('D&P', 02-03-2024, 8002, 'LEERDAM')
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT INTO uitvoeringen VALUES ('D&P', 07-03-2024, 8002, 'LEERDAM')
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT INTO inschrijvingen VALUES (7499, 'D&P', 02-03-2024, NULL)
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT INTO inschrijvingen VALUES (7934, 'D&P', 02-03-2024, NULL)
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
-INSERT INTO inschrijvingen VALUES (7698, 'D&P', 02-03-2024, NULL)
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+    ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+INSERT INTO uitvoeringen VALUES ('D&P', '02-03-2024', 8002, 'LEERDAM')
+    ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+INSERT INTO uitvoeringen VALUES ('D&P', '07-03-2024', 8002, 'LEERDAM')
+    ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+INSERT INTO inschrijvingen VALUES (7499, 'D&P', '02-03-2024', NULL)
+    ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+INSERT INTO inschrijvingen VALUES (7934, 'D&P', '02-03-2024', NULL)
+    ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+INSERT INTO inschrijvingen VALUES (7698, 'D&P', '02-03-2024', NULL)
+    ON CONFLICT DO NOTHING;                                                                                            -- [TEST]
 
 
 -- S2.9. Salarisverhoging
@@ -128,20 +128,23 @@ WHERE naam = 'MARTENS'
 
 -- Zijn collega Alders heeft ook plannen om te vertrekken. Verwijder ook zijn gegevens.
 -- Waarom lukt dit (niet)?
---GEEN IDEE
+
+--Omdat zijn foreign key nog steeds in de inschrijvingen staat
 
 -- S2.11. Nieuwe afdeling
 --
 -- Je wordt hoofd van de nieuwe afdeling 'FINANCIEN' te Leerdam,
 -- onder de hoede van De Koning. Kies een personeelnummer boven de 8000.
 -- Zorg voor de juiste invoer van deze gegevens.
-INSERT INTO afdelingen VALUES (60, 'FINANCIEN', 'LEERDAM', 8010)
+INSERT INTO afdelingen VALUES (60, 'FINANCIEN', 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 INSERT INTO medewerkers VALUES (8010, 'Kasper', 'K', 'MANAGER', 7839, 03-01-2004, 4000, NULL, 60)
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
+ON CONFLICT DO NOTHING;
 
+UPDATE afdelingen SET hoofd = 8010 WHERE anr = 60
 
+-- [TEST]
 
 -- -------------------------[ HU TESTRAAMWERK ]--------------------------------
 -- Met onderstaande query kun je je code testen. Zie bovenaan dit bestand
