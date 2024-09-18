@@ -67,7 +67,7 @@ where naam <> 'JANSEN' or voorl <> 'R'
 -- Er wordt een nieuwe uitvoering gepland voor cursus S02, en wel op de
 -- komende 2 maart. De cursus wordt gegeven in Leerdam door Nick Smit.
 -- Voeg deze gegevens toe.
-INSERT INTO uitvoeringen VALUES ('S02', '02-03-2024', 7369, 'Leerdam')
+INSERT INTO uitvoeringen VALUES ('S02', '2024-3-2', 7369, 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                            -- [TEST]
 
 
@@ -139,7 +139,7 @@ WHERE naam = 'MARTENS'
 INSERT INTO afdelingen VALUES (60, 'FINANCIEN', 'LEERDAM')
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
-INSERT INTO medewerkers VALUES (8010, 'Kasper', 'K', 'MANAGER', 7839, 03-01-2004, 4000, NULL, 60)
+INSERT INTO medewerkers VALUES (8010, 'Kasper', 'K', 'MANAGER', 7839, '03-01-2004', 4000, NULL, 60)
 ON CONFLICT DO NOTHING;
 
 UPDATE afdelingen SET hoofd = 8010 WHERE anr = 60
@@ -182,5 +182,3 @@ UPDATE medewerkers SET maandsal = 1250 WHERE mnr = 7521;
 UPDATE medewerkers SET maandsal = 2850 WHERE mnr = 7698;
 UPDATE medewerkers SET maandsal = 1500 WHERE mnr = 7844;
 UPDATE medewerkers SET maandsal = 800 WHERE mnr = 7900;
-
-
