@@ -43,7 +43,6 @@ from uitvoeringen u
 -- Geef in twee kolommen naast elkaar de achternaam van elke cursist (`cursist`)
 -- van alle S02-cursussen, met de achternaam van zijn cursusdocent (`docent`).
 
---TODO: Nog afkmaken
 DROP VIEW IF EXISTS s3_2; CREATE OR REPLACE VIEW s3_2 AS                                                     -- [TEST]
 select
     m_cursist.naam as cursist,
